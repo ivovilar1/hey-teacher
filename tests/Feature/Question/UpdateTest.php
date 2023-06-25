@@ -10,7 +10,7 @@ it('should be able to update a question', function () {
     actingAs($user);
     put(route('question.update', $question), [
         'question' => 'Updated Question?',
-    ])->assertRedirect();
+    ])->assertRedirect(route('question.index'));
 
     $question->refresh();
     expect($question)->question->toBe('Updated Question?');

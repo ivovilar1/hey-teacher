@@ -7,9 +7,10 @@
 
     <x-container>
         <div class="dark:text-gray-400 space-y-4">
-            @foreach ($questions as $item)
-                <x-question :question="$item" />
+            @foreach ($questions as $question)
+                <x-question :question="$question" />
             @endforeach
+            {{ $questions->links()}}
         </div>
     </x-container>
 </x-app-layout>

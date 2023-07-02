@@ -6,15 +6,18 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use function Pest\Laravel\{actingAs, get};
 
 it('should list all the questions', function () {
-    // Arrange - create some questions
+    // Arrange
     $user      = User::factory()->create();
     $questions = Question::factory()->count(5)->create();
+
     actingAs($user);
-    // act - acess to route
+
+    // Act
     $response = get(route('dashboard'));
-    // Assert - verifiy if a list of questions its show
+
+    // Assert
     /** @var Question $q */
-    foreach($questions as $q) {
+    foreach ($questions as $q) {
         $response->assertSee($q->question);
     }
 });
@@ -22,25 +25,31 @@ it('should list all the questions', function () {
 it('should paginate the result', function () {
     $user = User::factory()->create();
     Question::factory()->count(20)->create();
+
     actingAs($user);
-    get(route('dashboard'))->assertViewHas('questions', fn ($value) => $value instanceof LengthAwarePaginator);
+    get(route('dashboard'))
+        ->assertViewHas('questions', fn ($value) => $value instanceof LengthAwarePaginator);
 });
 
-it('should order by like and unlike, most liked question should be at the top, most unliked question shoul be at the bottom', function () {
+it('should order by like and unlike, most liked question should be at the top, most unliked questions should be in the bottom', function () {
     $user       = User::factory()->create();
     $secondUser = User::factory()->create();
     Question::factory()->count(5)->create();
-    $mostLikedQuestion   = Question::inRandomOrder()->first();
-    $mostUnlikedQuestion = Question::inRandomOrder()->first();
+
+    $mostLikedQuestion = Question::find(3);
     $user->like($mostLikedQuestion);
+
+    $mostUnlikedQuestion = Question::find(1);
     $secondUser->unlike($mostUnlikedQuestion);
+
     actingAs($user);
     get(route('dashboard'))
-        ->assertViewHas('questions', function ($questions) use ($mostLikedQuestion, $mostUnlikedQuestion) {
+        ->assertViewHas('questions', function ($questions) {
+
             expect($questions)
-                ->first()->id->toBe($mostLikedQuestion->id)
+                ->first()->id->toBe(3)
                 ->and($questions)
-                ->last()->id->toBe($mostUnlikedQuestion->id);
+                ->last()->id->toBe(1);
 
             return true;
         });

@@ -10,7 +10,7 @@
             @foreach ($questions as $question)
                 <x-question :question="$question" />
             @endforeach
-            {{ $questions->links()}}
+            {{ $questions->withQueryString()->links()}}
         </div>
     </x-container>
 </x-app-layout>
